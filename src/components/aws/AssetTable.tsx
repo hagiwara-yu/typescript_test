@@ -15,24 +15,26 @@ export default function AssetTable({ data }: { data: Asset[] }) {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // 検索
-  const filtered = data.filter((item) => {
-    return (
-      item.account_id.includes(keyword) ||
-      item.gip.includes(keyword)
-    );
-  });
+  const filtered = data.filter((a) =>
+    a.account_id.includes(keyword) || a.gip.includes(keyword)
+  );
 
   // ソート
   const sorted = [...filtered].sort((a, b) => {
-    const valA = a[sortKey];
-    const valB = b[sortKey];
+    let valA: string | number = a[sortKey];
+    let valB: string | number = b[sortKey];
+
+    if (sortKey.includes("date")) {
+      valA = new Date(valA).getTime();
+      valB = new Date(valB).getTime();
+    }
 
     if (valA < valB) return sortOrder === "asc" ? -1 : 1;
     if (valA > valB) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
 
-  //　ソート切り替え
+  // ソート切り替え
   const handleSort = (key: keyof Asset) => {
     if (sortKey === key) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -42,43 +44,71 @@ export default function AssetTable({ data }: { data: Asset[] }) {
     }
   };
 
-  return (
-    <div className="p-4">
-      {/* 検索 */}
-      <input
-        type="text"
-        placeholder="検索（account_id / IP）"
-        className="border p-2 mb-4 w-full"
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-      />
+  // ソートアイコン
+  const getSortIcon = (key: keyof Asset) => {
+    if (sortKey !== key) return "↕";
+    return sortOrder === "asc" ? "↑" : "↓";
+  };
 
-      {/* テーブル */}
+  return (
+    <div>
+      {/* 検索 + 件数 */}
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="検索（account_id / IP）"
+          className="border p-2 w-1/3"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+
+        {/* 件数表示 */}
+        <div className="text-sm text-gray-600">
+          {filtered.length} / {data.length} 件
+        </div>
+      </div>
+
       <table className="w-full border">
         <thead>
           <tr className="bg-gray-100">
-            <th onClick={() => handleSort("account_id")} className="cursor-pointer">
-              Account ID
+            <th
+              className="p-2 cursor-pointer"
+              onClick={() => handleSort("account_id")}
+            >
+              Account ID {getSortIcon("account_id")}
             </th>
-            <th onClick={() => handleSort("gip")} className="cursor-pointer">
-              IP
+            <th
+              className="p-2 cursor-pointer"
+              onClick={() => handleSort("gip")}
+            >
+              IP {getSortIcon("gip")}
             </th>
-            <th onClick={() => handleSort("create_date")} className="cursor-pointer">
-              Created
+            <th
+              className="p-2 cursor-pointer"
+              onClick={() => handleSort("create_date")}
+            >
+              Create {getSortIcon("create_date")}
             </th>
-            <th onClick={() => handleSort("end_date")} className="cursor-pointer">
-              End
+            <th
+              className="p-2 cursor-pointer"
+              onClick={() => handleSort("end_date")}
+            >
+              End {getSortIcon("end_date")}
             </th>
           </tr>
         </thead>
 
         <tbody>
           {sorted.map((a) => (
-            <tr key={`${a.account_id}-${a.gip}`} className="border-b">
-              <td>{a.account_id}</td>
-              <td>{a.gip}</td>
-              <td>{a.create_date}</td>
-              <td>{a.end_date}</td>
+            <tr key={`${a.account_id}-${a.gip}`} className="border-t">
+              <td className="p-2">{a.account_id}</td>
+              <td className="p-2">{a.gip}</td>
+              <td className="p-2">
+                {new Date(a.create_date).toLocaleString()}
+              </td>
+              <td className="p-2">
+                {new Date(a.end_date).toLocaleString()}
+              </td>
             </tr>
           ))}
         </tbody>
