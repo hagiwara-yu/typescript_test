@@ -1,5 +1,7 @@
+const API_URL = process.env.INTERNAL_API_URL;
+
 export async function getAllAssets() {
-  const res = await fetch("http://api:8000/v2/all", { //ここのURLは本番とSTGでURLが違うため管理方法を考える必要あり（ecsで動かすのでecsの環境変数使う形になりそうだが）
+  const res = await fetch(`${API_URL}/v2/all`, {
     cache: "no-store",
   });
 
