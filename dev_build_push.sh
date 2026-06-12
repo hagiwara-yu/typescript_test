@@ -3,9 +3,9 @@
 set -e
 
 AWS_REGION="ap-northeast-1"
-REPOSITORY_NAME="development-sec-cloud-asset-inventory-frontend-ecr"
-CLUSTER_NAME="development-sec-cloud-asset-inventory-ecs-cluster"
-SERVICE_NAME="development-sec-cloud-asset-inventory-ecs-frontend-serivce"
+REPOSITORY_NAME="XXXXXX"
+CLUSTER_NAME="XXXXXX"
+SERVICE_NAME="XXXXXXX"
 
 # タグ情報（Gitのハッシュ + タイムスタンプ）
 IMAGE_TAG="$(git rev-parse HEAD | cut -c 1-7)-$(date '+%Y%m%d-%H%M')"
